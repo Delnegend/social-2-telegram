@@ -1,0 +1,10 @@
+[tool.ruff]
+line-length = 120
+# F405: name may be undefined, or defined from star imports: module
+# F403: 'from module import *' used; unable to detect undefined names
+# E501: line too long (x > 79 characters)
+# E722: do not use bare except
+ignore = ["F405", "F403", "E501", "E722"]
+
+[tool.black]
+line-length = 120
