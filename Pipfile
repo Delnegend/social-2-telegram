@@ -1,0 +1,20 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+pytelegrambotapi = "*"
+selenium = "*"
+webdriver-manager = "*"
+aiohttp = "*"
+pyyaml = "*"
+
+[dev-packages]
+black = "*"
+ruff = "*"
+youtube-dl = "*"
+isort = "*"
+
+[requires]
+python_version = "3.11"

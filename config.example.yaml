@@ -1,0 +1,31 @@
+
+
+debug:
+  dump_scraped_tweet_to_json: false
+  dump_telegram_respond_to_json: true
+  headless_driver: true
+  press_enter_to_scrape: false
+
+twitter_scraper_config:
+  cookies_file_path: 'cookies.json'
+  validate_cookies: false
+  poll_frequency: "0.5" # manual implementation of selenium's WebDriverWait
+  timeout: "10"
+  blacklist_element:
+  whitelist_element: # override blacklist if != ""
+    # - "media"
+    # - "content"
+    # - "account_info"
+    # - "urls"
+    # - "metrics" (likes, retweets, replies, bookmarks)
+    # - "date_and_views"
+    # - "urls" (mentions, hashtags, hyperlinks)
+
+telegram_config:
+  api_key: "CHANGE_ME"
+  chat_id: "CHANGE_ME"
+  disable_notification: "True"
+  ignore_link_validation:
+    # - "example.com"
+  blacklist_accounts:
+    # - "example_username"
