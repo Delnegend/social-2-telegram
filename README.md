@@ -2,7 +2,7 @@
 
 A CLI tool for reposting artworks from social media to Telegram.
 
-![](assets\demo.png)
+![](assets/demo.png)
 
 ## Highlights
 - 🌎 Multiplatform support: 𝕏, FurAffinity
