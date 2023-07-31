@@ -16,7 +16,6 @@ A CLI tool for reposting artworks from social media to Telegram.
 ## Requirements
 - [Python 3.10+](https://www.python.org/)
 - `pipenv`
-- [Microsft Edge WebDriver](https://developer.microsoft.com/en-us/microsoft-edge/tools/webdriver/)
 
 ## Installation
 - Clone this repository
@@ -28,7 +27,6 @@ A CLI tool for reposting artworks from social media to Telegram.
    ```bash
    pipenv install
    ```
-- Download Microsoft Edge WebDriver, extract and place `msedgedriver.exe` in `local_data` folder
 
 ## Configuration
 
