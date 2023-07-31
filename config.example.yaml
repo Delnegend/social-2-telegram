@@ -1,0 +1,19 @@
+# debug
+debug_mode: false # print scraped content to console
+dump_scraped_post_to_json: false
+dump_telegram_respond_to_json: true
+
+# scraper
+extensions_dir: "local_data/extensions"
+cookies_dir: "local_data/cookies"
+user_data_dir: "local_data/user_data"
+wait_elem_timeout: 5 # seconds
+
+# telegram
+bot_api_key: ""
+chat_id: ""
+disable_notification: true
+ignore_link_validation:
+  - "example.com"
+blacklist_accounts:
+  - "example"
