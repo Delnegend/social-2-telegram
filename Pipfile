@@ -4,11 +4,12 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
-pytelegrambotapi = "*"
 selenium = "*"
 webdriver-manager = "*"
 aiohttp = "*"
 pyyaml = "*"
+requests = "*"
+option = "*"
 
 [dev-packages]
 black = "*"
