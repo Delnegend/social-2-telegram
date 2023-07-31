@@ -1,7 +1,9 @@
 import re
 from dataclasses import dataclass, field
 
-from helpers.COLORS import FCOLORS
+from option import Option, Some
+
+from variables import Colors
 
 
 @dataclass
@@ -22,12 +24,12 @@ class NewArtist:
         self.__artists_info = artists_info
         self.__artists_alt_accounts = artists_alt_account
 
-    def __processing_hashtags(self, _input: str) -> str:
+    def __process_representing_hashtags(self, _input: str) -> str:
         hashtags = " ".join([hashtag.replace("#", "").strip() for hashtag in _input.split(" ") if hashtag.strip()])
         hashtags = hashtags or self.__twitter_username
         return hashtags
 
-    def __processing_social_media(self, _input: str) -> dict[str, str]:
+    def __process_social_media_links(self, _input: str) -> dict[str, str]:
         # unprocessed_links = _input.split(",")
         unprocessed_links = [
             link
@@ -59,32 +61,27 @@ class NewArtist:
             link = re.sub(r"https://twitter.com/|/$", "", link)
             self.__artists_alt_accounts[link] = original_twitter_username
 
-    def new(self) -> bool:
-        """Returns False if user wants to exit"""
+    def new(self) -> Option[str]:
+        """Return 0 if user wants to exit"""
         hashtag_representing_artist = input(
-            f"Enter hashtag(s) representing artist ({FCOLORS.YELLOW}{self.__twitter_username}{FCOLORS.END}): "
+            f"Enter hashtag(s) representing artist ({Colors.YELLOW}{self.__twitter_username}{Colors.END}): "
         ).strip()
         if hashtag_representing_artist.startswith("0"):
-            return False
-        hashtag_representing_artist = self.__processing_hashtags(hashtag_representing_artist)
+            return Some("0")
+        hashtag_representing_artist = self.__process_representing_hashtags(hashtag_representing_artist)
 
         social_media = input("Enter artist's social media links (format: <name>: <link>, ...): ").strip()
-        if social_media == "0":
-            return False
-        social_media = self.__processing_social_media(social_media)
+        if social_media.startswith("0"):
+            return Some("0")
+        social_media = self.__process_social_media_links(social_media)
 
         self.__update_alt_accounts_list(social_media)
 
         country_flag = input("Enter artist's country flag (format: emoji): ").strip()
-        if country_flag == "0":
-            return False
+        if country_flag.startswith("0"):
+            return Some("0")
 
         self.__artists_info[self.__twitter_username] = ArtistInfoData(
             country_flag=country_flag, hashtag_represent=hashtag_representing_artist, social_media=social_media
         )
-
-        return True
-
-    def force_update_alt_accounts(self) -> None:
-        for _, artist_info in self.__artists_info.items():
-            self.__update_alt_accounts_list(artist_info.social_media)
+        return Some.NONE()

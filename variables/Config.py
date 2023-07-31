@@ -1,0 +1,16 @@
+class Config:
+    DEBUG_MODE = False
+    DUMP_SCRAPED_POST_TO_JSON = False
+    DUMP_TELEGRAM_RESPOND_TO_JSON = False
+
+    MSEDGE_DRIVER_PATH = ""
+    EXTENSIONS_DIR = ""
+    COOKIES_DIR = ""
+    USER_DATA_DIR = ""
+    WAIT_ELEM_TIMEOUT = 10
+
+    BOT_API_KEY = ""
+    CHAT_ID = ""
+    DISABLE_NOTIFICATION = False
+    IGNORE_LINK_VALIDATION: list[str] = []
+    BLACKLIST_ACCOUNTS: list[str] = []
