@@ -1,30 +1,24 @@
-# twt-2-tele
+# social-2-telegram
 
-A CLI tool for reposting artworks from Twitter to Telegram
+A CLI tool for reposting artworks from social media to Telegram.
 
 ![](assets\demo.png)
 
-## Features:
-- `TwitterScraper`: scrape (mostly) everything in a tweet
-  - Username
-  - Display name
-  - Profile picture (low resolution)
-  - Content
-  - Images/video/GIF
-  - Like/reply/retweet/bookmark count
-  - Timestamp
-- Private Twitter account
-- Artists w/ multiple Twitter accounts
-- Multiple images from one tweet
-- Additional hashtags
+## Highlights
+- 🌎 Multiplatform support: 𝕏, FurAffinity
+- 👥 Artists w/ multiple handles
+- 🖼️ Multiple images from one post
+- 🔖 Additional hashtags on top of the original post's hashtags
+- 🆔 Getting artists' usernames from handles
+- 🧩 Support external extensions
+- 🧬 Extensible: add more platforms by implementing PlatformBase class
 
-
-## Requirements:
+## Requirements
 - [Python 3.10+](https://www.python.org/)
 - `pipenv`
 - [Microsft Edge WebDriver](https://developer.microsoft.com/en-us/microsoft-edge/tools/webdriver/)
 
-## Installation:
+## Installation
 - Clone this repository
 - Install `pipenv` if you haven't
    ```bash
@@ -34,7 +28,11 @@ A CLI tool for reposting artworks from Twitter to Telegram
    ```bash
    pipenv install
    ```
-- Download Microsoft Edge WebDriver, extract and place `msedgedriver.exe` in this directory.
+- Download Microsoft Edge WebDriver, extract and place `msedgedriver.exe` in `local_data` folder
+
+## Configuration
+
+- Rename `config.example.yaml` to `config.yaml`
 
 - <details>
   <summary>Configure Telegram bot API first</summary>
@@ -51,7 +49,7 @@ A CLI tool for reposting artworks from Twitter to Telegram
       <source src="assets\get_bot_api_existing.mp4" type="video/mp4">
     </video>
 
-  - Place the API in `telegram_config > api_key` in `config.yaml`, ignore the `chat_id` for now (we'll get to that in the next step)
+  - Place the API in `bot_api_key` in `config.yaml`, ignore the `chat_id` for now (we'll get to that in the next step)
 
 </details>
 
@@ -59,32 +57,36 @@ A CLI tool for reposting artworks from Twitter to Telegram
   <summary>Configure Telegram chat ID</summary>
 
   - Chat id between `you` and the `bot`
-    - Spin up the application, assuming you have already configured the bot API
-      ```bash
-      pipenv run py main.py --get-chat-id
+    - Set `chat_id` in `config.yaml` to empty
+      ```yaml
+      chat_id: ""
       ```
-    - Send a message to your bot
+    - Run the app
+      ```bash
+      pipenv run py main.py
+      ```
+    - Send `/id` to the bot in Telegram
     - The chat id will be messaged back to you
 
-  - Chat id between `a channel` and the `bot`: use the channel's username directly
+  - Chat id between `a channel` and the `bot`: you can use the channel's handle directly
     ```yaml
-    telegram_config:
-      chat_id: "@your_channel_username"
+    chat_id: "@your_channel_username"
     ```
 
 </details>
 
-## Usage:
-```bash
-$ python3 main.py --help
-usage: main.py [-h] [--tweet-to-telegram] [--get-chat-id] [--force-update-alt-accounts] [--validate-social-links USERNAME]
+- Extensions:
+  - For 𝕏, use [crxextractor](http://crxextractor.com/) or [CRX Extractor/Downloader](https://chrome.google.com/webstore/detail/crx-extractordownloader/ajkhmmldknmfjnmeedkbkkojgobmljda?hl=vi) to download [Old Twitter Layout (2023)](https://chrome.google.com/webstore/detail/old-twitter-layout-2023/jgejdcdoeeabklepnkdbglgccjpdgpmf) as `.crx` file; place it in `./local_data/extensions/` folder.
+  - Optional: [uBlock Origin](https://chrome.google.com/webstore/detail/ublock-origin/cjpalhdlnbpafiamejdnhcphjbkeiagm)
 
-options:
-  -h, --help            show this help message and exit
-  --tweet-to-telegram   Reposting mode (default if no option is passed)
-  --get-chat-id         Spin up the bot to listen for direct messages and return the chat id
-  --force-update-alt-accounts
-                        Force update artists alt accounts in the database
-  --validate-social-links USERNAME
-                        Pass in a username to validate social links in the database
-```
+## Logging in to sites
+- Run the app
+  ```bash
+  pipenv run py main.py
+  ```
+
+- Logging in, e.g. 𝕏
+  ```
+  |=====[ Enter post url or [/login example.com] ]=====|
+  🍨 /login twitter.com
+  ```
