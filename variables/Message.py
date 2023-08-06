@@ -17,6 +17,7 @@ class Msg:
 
     MORE_HASHTAGS = "# not included (separated by a space): "
     SELECT_HANDLE = "Enter the index, <username>, <username where_to_find.com> or leave empty to use {}: "
+    ENTER_USERNAME = "Cannot scrape username for {}, please enter manually: "
 
 
 class MsgErr:
