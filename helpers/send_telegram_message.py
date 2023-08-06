@@ -61,6 +61,10 @@ def send_telegram_message(
         __compose_message(content) if media_urls is None else __compose_media_message(content, media_urls, media_type)
     )
 
+    if Config.DUMP_DATA_GOING_TO_BE_SENT_TO_TELEGRAM:
+        with open("debug_data_going_to_be_sent_to_telegram.json", "w") as f:
+            json.dump(data.unwrap(), f, indent=4)
+
     respond = requests.post(
         f"https://api.telegram.org/bot{Config.BOT_API_KEY}/{api}",
         data=data.unwrap(),
