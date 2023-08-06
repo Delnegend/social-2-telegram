@@ -12,6 +12,6 @@ class Config:
 
     BOT_API_KEY = ""
     CHAT_ID = ""
-    DISABLE_NOTIFICATION = False
+    DISABLE_NOTIFICATION = True
     IGNORE_LINK_VALIDATION: list[str] = []
     BLACKLIST_ACCOUNTS: list[str] = []
