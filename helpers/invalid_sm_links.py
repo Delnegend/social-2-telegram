@@ -1,4 +1,8 @@
+from __future__ import annotations
+
 import re
+import sys
+import time
 from concurrent.futures import ThreadPoolExecutor, as_completed
 
 import requests
@@ -7,18 +11,78 @@ from option import Option, Some
 from variables.Colors import Colors
 from variables.Config import Config
 
+if sys.version_info >= (3, 11):
+    from typing import TYPE_CHECKING
+else:
+    from typing_extensions import TYPE_CHECKING
+if TYPE_CHECKING:
+    from classes.Browser import Browser
 
-def check_invalid_links(_input_links: dict[str, str]) -> Option[dict[str, str]]:
+
+def __print_link(name: str, link: str, status: str) -> None:
+    """Print the link with a status"""
+    match status:
+        case _ if status.startswith("2") or status == "valid":
+            status = Colors.GREEN + status + Colors.END
+        case _ if status == "invalid":
+            status = Colors.RED + status + Colors.END
+        case _:
+            status = Colors.YELLOW + status + Colors.END
+    link = Colors.CYAN + link + Colors.END
+    print(f"- {name} ({link}): {status}")
+
+
+def __check_request(urL: str) -> bool:
+    """Check if the provided url is valid using requests"""
+    try:
+        response = requests.get(urL)
+    except Exception as e:
+        print(f"Exception: {e}")
+        return False
+    else:
+        return str(response.status_code)[0] == "2"
+
+
+def __check_selenium_uname_in_title(url: str, uname: str, browser: Browser) -> bool:
+    """Check if the website's title contains the artist's username"""
+    browser.driver.get(url)
+    valid = False
+    timer = time.time()
+    while not valid:
+        try:
+            title = browser.get_inner_html(browser.driver, "title")
+        except:
+            continue
+        valid = uname.lower() in title.lower()
+        if time.time() - timer > Config.WAIT_ELEM_TIMEOUT:
+            break
+    return valid
+
+
+def __check_selenium_pixiv(url: str, browser: Browser) -> bool:
+    """Check if the pixiv page contains the follow button"""
+    browser.driver.get(url)
+    valid = False
+    timer = time.time()
+    while not valid:
+        try:
+            elem = browser.get_elem(browser.driver, '[data-click-label="follow"]')
+        except:
+            continue
+        valid = elem is not None
+        if time.time() - timer > Config.WAIT_ELEM_TIMEOUT:
+            break
+    return valid
+
+
+def check_invalid_links(_input_links: dict[str, str], browser: Browser) -> Option[dict[str, str]]:
     """Validate social media links and return invalid links"""
-
-    links_to_check = {}
+    links_to_check: dict[str, str] = {}
     for name, link in _input_links.items():
         ignored = False
         for ignored_link in Config.IGNORE_LINK_VALIDATION:
             if ignored_link in link:
-                status = Colors.YELLOW + "ignored" + Colors.END
-                link = Colors.CYAN + link + Colors.END
-                print(f"- {name} ({link}): {status}")
+                __print_link(name, link, "ignored")
                 ignored = True
                 break
         if ignored:
@@ -27,30 +91,53 @@ def check_invalid_links(_input_links: dict[str, str]) -> Option[dict[str, str]]:
             link = f"https://{link}"
         links_to_check[name] = link
 
-    invalid_links = {}
+    invalid_links: dict[str, str] = {}
     with ThreadPoolExecutor() as executor:
-        futures = {executor.submit(requests.get, link): name for name, link in links_to_check.items()}
+        futures = {executor.submit(__check_request, link): name for name, link in links_to_check.items()}
         for future in as_completed(futures):
-            name = futures[future]
-            try:
-                response = future.result()
-            except Exception as e:
-                print(f"Exception: {e}")
-                invalid_links[name] = links_to_check[name]
+            is_valid, url = future.result(), links_to_check[futures[future]]
+            if not is_valid:
+                invalid_links[futures[future]] = url
             else:
-                status_code_range = str(response.status_code)[0]
-                color_code = ""
-                url = Colors.CYAN + response.url + Colors.END
-                match status_code_range:
-                    case "2":
-                        color_code = Colors.GREEN
-                    case "3":
-                        color_code = Colors.YELLOW
-                    case _:
-                        color_code = Colors.RED
-                print(f"- {name} ({url}): {color_code}{response.status_code}{Colors.END}")
-                if status_code_range != "2":
-                    invalid_links[name] = links_to_check[name]
+                __print_link(futures[future], url, "200")
+
+    if invalid_links:
+        for name, link in zip(list(invalid_links.keys()).copy(), list(invalid_links.values()).copy()):
+            if "pixiv.net" in link:
+                if __check_selenium_pixiv(link, browser):
+                    print(f"- {name} ({Colors.CYAN}{link}{Colors.END}): {Colors.GREEN}valid{Colors.END}")
+                    del invalid_links[name]
+                    continue
+                else:
+                    print(f"- {name} ({Colors.CYAN}{link}{Colors.END}): {Colors.RED}invalid{Colors.END}")
+
+            uname: str = ""
+            match link:
+                case _ if "ko-fi.com" in link:
+                    if (match := re.search(r"(?<=ko-fi.com\/)[^\/]+", link)) is not None:
+                        uname = match.group(0)
+                case _ if "subscribestar.adult" in link:
+                    if (match := re.search(r"(?<=subscribestar.adult\/)[^\/]+", link)) is not None:
+                        uname = match.group(0)
+                case _ if "skeb.jp" in link:
+                    if (match := re.search(r"(?<=skeb.jp\/)[^\/]+", link)) is not None:
+                        uname = match.group(0)
+                case _ if "picarto.tv" in link:
+                    if (match := re.search(r"(?<=picarto.tv\/)[^\/]+", link)) is not None:
+                        uname = match.group(0)
+                case _ if "linktr.ee" in link:
+                    if (match := re.search(r"(?<=linktr.ee\/)[^\/]+", link)) is not None:
+                        uname = match.group(0)
+
+            if not uname:
+                __print_link(name, link, "cannot parse username from link")
+                continue
+
+            if __check_selenium_uname_in_title(link, uname, browser):
+                __print_link(name, link, "valid")
+                del invalid_links[name]
+            else:
+                __print_link(name, link, "invalid")
 
     return Some(invalid_links) if invalid_links else Option.NONE()
 
