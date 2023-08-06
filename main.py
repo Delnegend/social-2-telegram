@@ -234,7 +234,7 @@ class MainMenu:
         artist_obj = self.__artists_info[artist_handle]
 
         print_sign(MsgSign.VALIDATE_LINKS)
-        if (invalid_links := check_invalid_links(artist_obj.social_media)).is_some:
+        if (invalid_links := check_invalid_links(artist_obj.social_media, self.browser)).is_some:
             print_sign(MsgErr.FOUND_INVALID_LINKS)
             if handle_invalid_links(artist_obj.social_media, invalid_links.unwrap()).unwrap() == "0":
                 return Ok(None)
