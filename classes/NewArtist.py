@@ -84,4 +84,4 @@ class NewArtist:
         self.__artists_info[self.__twitter_username] = ArtistInfoData(
             country_flag=country_flag, hashtag_represent=hashtag_representing_artist, social_media=social_media
         )
-        return Some.NONE()
+        return Some("")
