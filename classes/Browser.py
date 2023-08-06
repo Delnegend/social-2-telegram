@@ -5,14 +5,13 @@ import os
 import sys
 import time
 
-from option import Err, Ok, Result, Option, Some
+from option import Err, Ok, Option, Result, Some
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.edge.service import Service as EdgeService
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.wait import WebDriverWait
 from webdriver_manager.microsoft import EdgeChromiumDriverManager
-from webdriver_manager.chrome import ChromeDriverManager
 
 from helpers.norm import norm
 from variables.Config import Config
