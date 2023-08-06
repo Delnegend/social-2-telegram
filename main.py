@@ -183,7 +183,7 @@ class MainMenu:
             {post.content}{_delimeter}
             [Sauce]({post.url}) \\| {artist_uname}
             {social_media_links}
-            _{video_hashtag}{md_format(hashtags)}_
+            _{md_format(video_hashtag)}{md_format(hashtags)}_
         """
         return Some("\n".join(line.strip() for line in message.split("\n")))
 
