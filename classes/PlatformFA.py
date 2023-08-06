@@ -7,6 +7,7 @@ from html import unescape
 
 from option import Option, Some
 from selenium.webdriver.common.by import By
+
 from classes.PlatformBase import PlatformBase
 from classes.Post import Post
 
@@ -124,12 +125,20 @@ class PlatformFA(PlatformBase):
             return Option.NONE()
         submission = submission_.value
 
-        pfp = "" if (pfp_ := self.__get_elem(submission, ".submission-user-icon")).is_none else pfp_.value.get_attribute("src") or ""
+        pfp = (
+            ""
+            if (pfp_ := self.__get_elem(submission, ".submission-user-icon")).is_none
+            else pfp_.value.get_attribute("src") or ""
+        )
         username = self.__get_inner_html(submission, ".submission-id-sub-container a strong")
 
         content = self.__process_content(self.__get_inner_html(submission, ".submission-description"))
         image = self.__scrape_image()
-        date = "" if (date_ := self.__get_elem(submission, ".popup_date")).is_none else date_.value.get_attribute("title") or ""
+        date = (
+            ""
+            if (date_ := self.__get_elem(submission, ".popup_date")).is_none
+            else date_.value.get_attribute("title") or ""
+        )
 
         if (stats_ := self.__get_elem(self.__driver, ".submission-sidebar .stats-container")).is_none:
             stats = WebElement
