@@ -140,7 +140,9 @@ class PlatformTwitter(PlatformBase):
 
         content = self.__process_content(self.__get_inner_html(tweet, ".tweet-body-text", render_timeout))
         media_type, media = self.__scrape_media(tweet)
-        date = "" if (date_ := self.__get_elem(tweet, ".tweet-date")).is_none else date_.value.get_attribute("title") or ""
+        date = (
+            "" if (date_ := self.__get_elem(tweet, ".tweet-date")).is_none else date_.value.get_attribute("title") or ""
+        )
 
         repost, likes, quotes = (
             self.__process_stats(self.__get_inner_html(tweet, ".tweet-footer-stat-retweets", render_timeout)),
