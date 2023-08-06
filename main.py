@@ -134,11 +134,16 @@ class MainMenu:
             return Ok(post_er_uname)
         print_sign(MsgSign.GET_USERNAME, end_line="\r")
 
-        if (artist_uname := self.platform_to_get_username.get_username(artist_handle)).is_none:
+        artist_uname = ""
+        if (artist_uname_ := self.platform_to_get_username.get_username(artist_handle)).is_none:
             print_sign(MsgSign.GET_USERNAME, "Error", start_line="")
-            return Err(MsgErr.CANNOT_GET_USERNAME)
-        print_sign(MsgSign.GET_USERNAME, artist_uname.value, start_line="")
-        return Ok(artist_uname.value)
+            artist_uname = input(Msg.ENTER_USERNAME.format(artist_handle)).strip()
+            if artist_uname == "0":
+                return Ok("0")
+        else:
+            artist_uname = artist_uname_.value
+        print_sign(MsgSign.GET_USERNAME, artist_uname, start_line="")
+        return Ok(artist_uname)
 
     def __step_composing(
         self, post: Post, artist_uname: str, artist_handle: str, all_handles: list[str], more_hashtags: list[str]
