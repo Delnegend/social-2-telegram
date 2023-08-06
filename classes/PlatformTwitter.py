@@ -39,9 +39,11 @@ class PlatformTwitter(PlatformBase):
     def get_username(self, handle: str) -> Option[str]:
         """Return (is_handle_valid: bool, username: str)"""
         self.__driver.get(f"https://twitter.com/{handle}")
-        if self.__get_inner_html(self.__driver, "#loading-box-error", 0.5) != "":
+        if self.__get_inner_html(self.__driver, "#loading-box-error") != "":
             return Option.NONE()
-        return Some(self.__cleanup_username(self.__get_inner_html(self.__driver, "#profile-name", 1)))
+        if (username := self.__get_inner_html(self.__driver, "#profile-name")) == "":
+            return Option.NONE()
+        return Some(self.__cleanup_username(username))
 
     # region: helpers
 
