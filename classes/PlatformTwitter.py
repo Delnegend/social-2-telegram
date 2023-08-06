@@ -24,7 +24,7 @@ if TYPE_CHECKING:
 class PlatformTwitter(PlatformBase):
     def __init__(self, browser: Browser) -> None:
         self.title = "𝕏"
-        self.post = "x's"
+        self.post = "post"
         self.__driver = browser.driver
         self.__get_inner_html = browser.get_inner_html
         self.__get_elem = browser.get_elem
