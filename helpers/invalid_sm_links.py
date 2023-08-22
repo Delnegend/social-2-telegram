@@ -139,7 +139,7 @@ def check_invalid_links(_input_links: dict[str, str], browser: Browser) -> Optio
             else:
                 __print_link(name, link, "invalid")
 
-    return Some(invalid_links) if invalid_links else Option.NONE()
+    return Some(invalid_links) if invalid_links else Option.NONE()  # type: ignore
 
 
 def handle_invalid_links(links: dict[str, str], invalid_links: dict[str, str]) -> Option[str]:
