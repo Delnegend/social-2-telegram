@@ -33,7 +33,7 @@ class PlatformFA(PlatformBase):
     def has_the_pattern(self, url: str) -> Option[str]:
         if match := re.match(r".*\/view\/(\d+)", url):
             return Some(f"https://www.furaffinity.net/view/{match.groups()[0]}")
-        return Option.NONE()
+        return Option.NONE()  # type: ignore
 
     def get_username(self, handle: str) -> Option[str]:
         return Some(handle)
@@ -100,7 +100,7 @@ class PlatformFA(PlatformBase):
                 return "https://www.furaffinity.net" + link
             return link
 
-        return [(tag.get_attribute("innerHTML") or "", helper(tag.get_attribute("href"))) for tag in tags]
+        return [(tag.get_attribute("innerHTML") or "", helper(tag.get_attribute("href"))) for tag in tags]  # type: ignore
 
     def __scrape_image(self) -> str:
         """Scrape image from page"""
@@ -109,8 +109,8 @@ class PlatformFA(PlatformBase):
         if len(elems) == 0:
             return ""
         for elem in elems:
-            if elem.get_attribute("innerHTML") == "Download":
-                return elem.get_attribute("href") or ""
+            if elem.get_attribute("innerHTML") == "Download":  # type: ignore
+                return elem.get_attribute("href") or ""  # type: ignore
         return ""
 
     def __scrape_tags(self) -> list[WebElement]:
@@ -122,13 +122,13 @@ class PlatformFA(PlatformBase):
         url = self.has_the_pattern(url).value
         self.__driver.get(url)
         if (submission_ := self.__get_elem(self.__driver, ".submission-content")).is_none:
-            return Option.NONE()
+            return Option.NONE()  # type: ignore
         submission = submission_.value
 
         pfp = (
             ""
             if (pfp_ := self.__get_elem(submission, ".submission-user-icon")).is_none
-            else pfp_.value.get_attribute("src") or ""
+            else pfp_.value.get_attribute("src") or ""  # type: ignore
         )
         username = self.__get_inner_html(submission, ".submission-id-sub-container a strong")
 
@@ -137,7 +137,7 @@ class PlatformFA(PlatformBase):
         date = (
             ""
             if (date_ := self.__get_elem(submission, ".popup_date")).is_none
-            else date_.value.get_attribute("title") or ""
+            else date_.value.get_attribute("title") or ""  # type: ignore
         )
 
         if (stats_ := self.__get_elem(self.__driver, ".submission-sidebar .stats-container")).is_none:
