@@ -34,15 +34,15 @@ class PlatformTwitter(PlatformBase):
         if match := re.match(r".*\/([a-zA-Z0-9_]{1,15})\/status\/(\d+)", url):
             username, tweet_id = match.groups()
             return Some(f"https://twitter.com/{username}/status/{tweet_id}")
-        return Option.NONE()
+        return Option.NONE()  # type: ignore
 
     def get_username(self, handle: str) -> Option[str]:
         """Return (is_handle_valid: bool, username: str)"""
         self.__driver.get(f"https://twitter.com/{handle}")
         if self.__get_inner_html(self.__driver, "#loading-box-error") != "":
-            return Option.NONE()
+            return Option.NONE()  # type: ignore
         if (username := self.__get_inner_html(self.__driver, "#profile-name")) == "":
-            return Option.NONE()
+            return Option.NONE()  # type: ignore
         return Some(self.__cleanup_username(username))
 
     # region: helpers
@@ -55,21 +55,21 @@ class PlatformTwitter(PlatformBase):
     def __scrape_media(self, tweet: WebElement) -> tuple[str, list[str]]:
         """Return (content_type: str, content_list: list[str])"""
         media: list[str] = []
-        if len(tweet.find_elements(By.CSS_SELECTOR, ".tweet-media")) == 0:
+        if len(tweet.find_elements(By.CSS_SELECTOR, ".tweet-media")) == 0:  # type: ignore
             return "", media
 
-        media_container = tweet.find_element(By.CSS_SELECTOR, ".tweet-media")
-        images = media_container.find_elements(By.TAG_NAME, "img")
+        media_container = tweet.find_element(By.CSS_SELECTOR, ".tweet-media")  # type: ignore
+        images = media_container.find_elements(By.TAG_NAME, "img")  # type: ignore
 
         if len(images) > 0:
             for image in images:
-                if src := image.get_attribute("src"):
+                if src := image.get_attribute("src"):  # type: ignore
                     media.append(src)
             return "photo", media
 
         # return the src attribute of the source tag
-        video = media_container.find_element(By.TAG_NAME, "video")
-        media.append(video.find_element(By.TAG_NAME, "source").get_attribute("src") or "")
+        video = media_container.find_element(By.TAG_NAME, "video")  # type: ignore
+        media.append(video.find_element(By.TAG_NAME, "source").get_attribute("src") or "")  # type: ignore
         return "video", media
 
     # endregion
@@ -93,7 +93,7 @@ class PlatformTwitter(PlatformBase):
             content = content.replace(f"[{hyperlink[0]}]({hyperlink[1]})", f"[{text}]({link})")
         return unescape(content.strip())
 
-    def __process_links(self, content) -> dict[str, list[tuple[str, str]]]:
+    def __process_links(self, content: str) -> dict[str, list[tuple[str, str]]]:
         urls = re.findall(r"\[.*?\]\(.*?\)", content)
         mentions: list[tuple[str, str]] = []
         hashtags: list[tuple[str, str]] = []
@@ -130,18 +130,20 @@ class PlatformTwitter(PlatformBase):
 
         render_timeout: float = 1.2
         if (tweet_ := self.__get_elem(self.__driver, ".tweet-main")).is_none:
-            return Option.NONE()
+            return Option.NONE()  # type: ignore
         tweet = tweet_.value
 
         url = self.has_the_pattern(input_url).value
-        pfp = tweet.find_element(By.CSS_SELECTOR, ".tweet-avatar").get_attribute("src") or ""
+        pfp = tweet.find_element(By.CSS_SELECTOR, ".tweet-avatar").get_attribute("src") or ""  # type: ignore
         handle = self.__get_inner_html(tweet, ".tweet-header-handle", render_timeout).replace("@", "")
         username = self.__cleanup_username(self.__get_inner_html(tweet, ".tweet-header-name", render_timeout))
 
         content = self.__process_content(self.__get_inner_html(tweet, ".tweet-body-text", render_timeout))
         media_type, media = self.__scrape_media(tweet)
         date = (
-            "" if (date_ := self.__get_elem(tweet, ".tweet-date")).is_none else date_.value.get_attribute("title") or ""
+            ""
+            if (date_ := self.__get_elem(tweet, ".tweet-date")).is_none
+            else date_.value.get_attribute("title") or ""  # type: ignore
         )
 
         repost, likes, quotes = (

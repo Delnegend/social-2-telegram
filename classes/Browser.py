@@ -35,10 +35,10 @@ class Browser:
         self.__creating_folders()
 
         options = webdriver.EdgeOptions()
-        options.add_argument("log-level=3")
-        options.add_argument("start-minimized")
-        options.add_argument(f"user-data-dir={os.path.abspath(Config.USER_DATA_DIR)}")
-        options.add_experimental_option("excludeSwitches", ["enable-logging"])
+        options.add_argument("log-level=3")  # type: ignore
+        options.add_argument("start-minimized")  # type: ignore
+        options.add_argument(f"user-data-dir={os.path.abspath(Config.USER_DATA_DIR)}")  # type: ignore
+        options.add_experimental_option("excludeSwitches", ["enable-logging"])  # type: ignore
 
         self.__loading_extension(options)
 
@@ -73,15 +73,14 @@ class Browser:
             for f in os.listdir(Config.COOKIES_DIR)
             if os.path.isfile(os.path.join(Config.COOKIES_DIR, f)) and f.endswith(".json")
         ]
-        websites = [f"https://{f[:-5]}" for f in cookies_files]
 
-        for cookie_file, website in zip(cookies_files, websites):
+        for cookie_file in cookies_files:
             with open(os.path.join(Config.COOKIES_DIR, cookie_file), "r") as f:
                 # Source: https://stackoverflow.com/a/63220249
-                self.driver.execute_cdp_cmd("Network.enable", {})
+                self.driver.execute_cdp_cmd("Network.enable", {})  # type: ignore
                 for cookie in json.load(f):
-                    self.driver.execute_cdp_cmd("Network.setCookie", cookie)
-                self.driver.execute_cdp_cmd("Network.disable", {})
+                    self.driver.execute_cdp_cmd("Network.setCookie", cookie)  # type: ignore
+                self.driver.execute_cdp_cmd("Network.disable", {})  # type: ignore
 
     # endregion
 
@@ -98,7 +97,7 @@ class Browser:
         self.driver.get(website)
         self.driver.maximize_window()
         input(f"Press enter after you logged in to {website}...")
-        cookies = self.driver.get_cookies()
+        cookies = self.driver.get_cookies()  # type: ignore
         with open(filename, "w", encoding="utf-8") as f:
             json.dump(cookies, f)
         self.driver.minimize_window()
@@ -108,7 +107,7 @@ class Browser:
             return Ok(None)
 
         try:
-            WebDriverWait(self.driver, Config.WAIT_ELEM_TIMEOUT).until(exist((By.CSS_SELECTOR, css_presence)))
+            WebDriverWait(self.driver, Config.WAIT_ELEM_TIMEOUT).until(exist((By.CSS_SELECTOR, css_presence)))  # type: ignore
             return Ok(None)
         except:
             return Err("Cannot find the css selector provided. Ignore this if it's logged in.")
@@ -117,12 +116,12 @@ class Browser:
         """Scrape a css selector until it's not empty, then return it
         This function panics on purpose if the element is not found after the timeout
         """
-        WebDriverWait(self.driver, Config.WAIT_ELEM_TIMEOUT).until(exist((By.CSS_SELECTOR, css_selector)))
-        element: WebElement = parent.find_element(By.CSS_SELECTOR, css_selector)
-        content: str = element.get_attribute("innerHTML") or ""
+        WebDriverWait(self.driver, Config.WAIT_ELEM_TIMEOUT).until(exist((By.CSS_SELECTOR, css_selector)))  # type: ignore
+        element: WebElement = parent.find_element(By.CSS_SELECTOR, css_selector)  # type: ignore
+        content: str = element.get_attribute("innerHTML") or ""  # type: ignore
         start_time = time.time()
         while content == "":
-            content = element.get_attribute("innerHTML") or ""
+            content = element.get_attribute("innerHTML") or ""  # type: ignore
             if time.time() - start_time > timeout:
                 break
         return content
