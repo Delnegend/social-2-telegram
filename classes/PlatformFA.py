@@ -118,9 +118,9 @@ class PlatformFA(PlatformBase):
             return []
         return elems
 
-    def scrape(self, url: str) -> Option[Post]:
-        url = self.has_the_pattern(url).value
-        self.__driver.get(url)
+    def scrape(self, input_url: str) -> Option[Post]:
+        input_url = self.has_the_pattern(input_url).value
+        self.__driver.get(input_url)
         if (submission_ := self.__get_elem(self.__driver, ".submission-content")).is_none:
             return Option.NONE()  # type: ignore
         submission = submission_.value
@@ -156,7 +156,7 @@ class PlatformFA(PlatformBase):
 
         return Some(
             Post(
-                url=url,
+                url=input_url,
                 profile_picture=pfp,
                 handle=username,
                 username=username,
