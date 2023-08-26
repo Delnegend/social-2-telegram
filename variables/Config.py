@@ -15,3 +15,6 @@ class Config:
     DISABLE_NOTIFICATION = True
     IGNORE_LINK_VALIDATION: list[str] = []
     BLACKLIST_ACCOUNTS: list[str] = []
+
+    ARTISTS_INFO_FILE = "artists_info.yaml"
+    ARTISTS_ALT_HANDLES_FILE = "artists_alt_handles.yaml"
