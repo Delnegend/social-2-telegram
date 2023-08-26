@@ -17,7 +17,7 @@ def __compose_message(content: str) -> Option[dict[str, str | bool]]:
 
 
 def __compose_media_message(
-    content: str, media_urls: list[str], media_type: str = "photo"
+    content: str, media_urls: list[str], media_type: str = "photo", mark_media_spoiler: bool = False
 ) -> Option[dict[str, str | bool]]:
     media_processed: list[dict[str, str | bool]] = [
         {
@@ -25,15 +25,16 @@ def __compose_media_message(
             "media": media_urls[0],
             "caption": content,
             "parse_mode": "MarkdownV2",
+            "has_spoiler": mark_media_spoiler,
         }
     ]
     if media_type == "video":
         media_processed[0]["supports_streaming"] = True
     media_processed.extend(
         [
-            {"type": media_type, "media": media_url, "supports_streaming": True}
+            {"type": media_type, "media": media_url, "supports_streaming": True, "has_spoiler": mark_media_spoiler}
             if media_type == "video"
-            else {"type": media_type, "media": media_url}
+            else {"type": media_type, "media": media_url, "has_spoiler": mark_media_spoiler}
             for media_url in media_urls[1:]
         ]
     )
@@ -47,7 +48,7 @@ def __compose_media_message(
 
 
 def send_telegram_message(
-    content: str, media_urls: list[str] | None = None, media_type: str = "photo"
+    content: str, media_urls: list[str] | None = None, media_type: str = "photo", mark_media_spoiler: bool = False
 ) -> Result[None, str]:
     """
     Send a message to telegram chat
@@ -57,9 +58,10 @@ def send_telegram_message(
     """
 
     api = "sendMessage" if media_urls is None else "sendMediaGroup"
-    data = (
-        __compose_message(content) if media_urls is None else __compose_media_message(content, media_urls, media_type)
-    )
+    if media_urls is None:
+        data = __compose_message(content)
+    else:
+        data = __compose_media_message(content, media_urls, media_type, mark_media_spoiler)
 
     if Config.DUMP_DATA_GOING_TO_BE_SENT_TO_TELEGRAM:
         with open("debug_data_going_to_be_sent_to_telegram.json", "w") as f:
