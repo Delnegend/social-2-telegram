@@ -23,7 +23,7 @@ from helpers import (
 from variables import Config, Msg, MsgErr, MsgSign
 
 
-@lambda _: _(Config)
+@lambda _: _(Config)  # type: ignore
 def load_config(Config: type[Config]) -> None:
     for config_key in Config.__dict__.keys():
         if config_key.startswith("__"):
