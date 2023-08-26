@@ -48,6 +48,7 @@ class MainMenu:
         self.__artists_info: dict[str, ArtistInfoData] = {}
         self.__artists_alt_handles: dict[str, set[str]] = {}  # key: alt handle, value: main handle
         self.__artists_info, self.__artists_alt_handles = artists_info_load()
+        self.__is_irl = False
 
         self.browser = Browser()
         self.platform_to_get_username: PlatformBase
@@ -57,6 +58,7 @@ class MainMenu:
             print(Msg.DEBUG_ENABLED)
 
         while True:
+            self.__is_irl = False
             print_sign(Msg.ENTER_POST_URL)
             input_url: str = input("🍨 ").strip()
 
@@ -69,6 +71,10 @@ class MainMenu:
                 url = input_url.split(" ")[1].strip().replace("https://", "").replace("http://", "").replace("/", "")
                 self.browser.cookies_create(url, os.path.join(Config.COOKIES_DIR, url), "")
                 continue
+
+            if input_url.startswith("/irl "):
+                self.__is_irl = True
+                input_url = input_url.split(" ")[1].strip()
 
             if (platform := match_host(input_url, self.browser)).is_ok:
                 self.platform = platform.unwrap()
@@ -153,7 +159,7 @@ class MainMenu:
 
         post.content = md_format(post.content)
         post.url = md_format(post.url)
-        _delimeter = ("\n`" + "—" * 20 + "`") if post.content else ""
+        delimeter = "\n`" + "—" * 20 + "`"
 
         if artist_obj.country_flag not in artist_uname:
             artist_uname += " " + artist_obj.country_flag
@@ -175,8 +181,10 @@ class MainMenu:
                 hashtags_list.append(hashtag.strip())
         hashtags = " ".join(f"#{hashtag}" if not hashtag.startswith("#") else hashtag for hashtag in hashtags_list)
 
+        cw_irl = f"`CW: IRL content`{delimeter}\n" if self.__is_irl else ""
+
         message = f"""\
-            {post.content}{_delimeter}
+            {cw_irl}{post.content}{delimeter if post.content else ""}
             [Sauce]({post.url}) \\| {artist_uname}
             {social_media_links}
             _{md_format(video_hashtag)}{md_format(hashtags)}_
