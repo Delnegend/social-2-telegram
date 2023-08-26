@@ -4,8 +4,8 @@ __pycache__/
 *.json
 msedgedriver.exe
 
-artist_alt_account.yaml
-artist_info.yaml
+artists_alt_handles.yaml
+artists_info.yaml
 config.yaml
 
 local_data
