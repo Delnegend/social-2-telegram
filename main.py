@@ -257,7 +257,27 @@ class MainMenu:
 
 
 def main():
-    MainMenu()
+    if (len(sys.argv)) == 1:
+        MainMenu()
+        return
+    elif sys.argv[1] == "--reparse-alt-handles":
+        artists_info: dict[str, ArtistInfoData] = {}
+        artists_alt_handles: dict[str, set[str]] = {}
+        artists_info, artists_alt_handles = artists_info_load()
+        for artist_handle, artist_obj in artists_info.items():
+            artists_alt_handles[artist_handle] = NewArtist(
+                artist_handle, artists_info, artists_alt_handles
+            ).process_alt_handles(artist_obj.social_media)
+
+        handles_to_be_deleted: list[str] = []
+        for main_handle, alt_handles in artists_alt_handles.items():
+            if len(alt_handles) == 0:
+                handles_to_be_deleted.append(main_handle)
+
+        for handle in handles_to_be_deleted:
+            del artists_alt_handles[handle]
+
+        artists_info_save(artists_info, artists_alt_handles)
 
 
 if __name__ == "__main__":
