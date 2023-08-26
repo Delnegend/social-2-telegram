@@ -1,5 +1,5 @@
 from helpers.artists_info_load_save import artists_info_load, artists_info_save
-from helpers.insensitive_match import insensitive_match
+from helpers.insensitive_match import insensitive_match  # type: ignore
 from helpers.invalid_sm_links import check_invalid_links, handle_invalid_links
 from helpers.match_host import match_host
 from helpers.md_format import md_format

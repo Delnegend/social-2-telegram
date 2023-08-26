@@ -130,10 +130,11 @@ class Browser:
         self, parent: WebElement | WebDriver, css_selector: str, timeout: float = Config.WAIT_ELEM_TIMEOUT
     ) -> Option[WebElement]:
         """Wait + find an element"""
-        WebDriverWait(parent, timeout).until(exist((By.CSS_SELECTOR, css_selector)))
-        if (res := parent.find_element(By.CSS_SELECTOR, css_selector)) is not None:
-            return Some(res)
-        return Option.NONE()
+        try:
+            WebDriverWait(parent, timeout).until(exist((By.CSS_SELECTOR, css_selector)))  # type: ignore
+            return Some(parent.find_element(By.CSS_SELECTOR, css_selector))  # type: ignore
+        except:
+            return Option.NONE()  # type: ignore
 
     def get_elems(
         self, parent: WebElement | WebDriver, css_selector: str, timeout: float = Config.WAIT_ELEM_TIMEOUT

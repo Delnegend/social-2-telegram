@@ -7,12 +7,12 @@ import yaml
 from option import Err, Ok, Option, Result, Some
 
 from classes import ArtistInfoData, Browser, NewArtist, PlatformBase, Post
+from helpers import insensitive_match  # type: ignore
 from helpers import (
     artists_info_load,
     artists_info_save,
     check_invalid_links,
     handle_invalid_links,
-    insensitive_match,
     match_host,
     md_format,
     overwrite_sm_name,
