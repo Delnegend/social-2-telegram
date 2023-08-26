@@ -34,6 +34,12 @@ class Msg:
     ENTER_USERNAME = highlight("Cannot scrape username for <|{}|>, please enter manually: ")
 
 
+class NewArtistMsg:
+    HASHTAG_REPRESENT = highlight("Enter representing hashtag(s) (empty for <|{}|>): ")
+    SOCIAL_MEDIA = highlight("Enter {}'s social media links (format: <|<name>: <link>|>, ...): ")
+    COUNTRY = highlight("Enter {}'s country flag (format: <|emoji|>): ")
+
+
 class MsgErr:
     INVALID_INDEX = "Invalid index"
     BLACKLISTED_ACCOUNT = "This account is blacklisted"
