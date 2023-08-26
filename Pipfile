@@ -14,7 +14,6 @@ option = "*"
 [dev-packages]
 black = "*"
 ruff = "*"
-youtube-dl = "*"
 isort = "*"
 
 [requires]
