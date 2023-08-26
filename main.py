@@ -46,7 +46,7 @@ class MainMenu:
             sys.exit(0)
 
         self.__artists_info: dict[str, ArtistInfoData] = {}
-        self.__artists_alt_handles: dict[str, set[str]] = {}  # key: alt handle, value: main handle
+        self.__artists_alt_handles: dict[str, set[str]] = {}  # key: main handle, value: set(alt handles)
         self.__artists_info, self.__artists_alt_handles = artists_info_load()
         self.__is_irl = False
 
@@ -212,6 +212,7 @@ class MainMenu:
             print(yaml.dump(post.dict, sort_keys=False, indent=4, allow_unicode=True))
             return Ok(None)
 
+        # --- Selecting which handle appears in the post is the artist ---
         print_sign(MsgSign.ACTUAL_HANDLE)
         all_handles = [post.handle] + [mention[0] for mention in post.mention_link if mention[0] != post.handle]
         if (artist_handle := self.__step__ask_artist_handle(all_handles).unwrap()) == "0":
@@ -221,10 +222,12 @@ class MainMenu:
         elif (artist_uname := _artist_uname.unwrap()) == "0":
             return Ok(None)
 
+        # --- Additional hashtags ---
         print_sign(MsgSign.MORE_HASHTAGS)
         if (more_hashtags := self.__step__ask_more_hashtags().unwrap()) == "0":
             return Ok(None)
 
+        # --- If handle not found in DB, create ---
         if (_artist_handle := find_main_handle(artist_handle, self.__artists_alt_handles)).is_some:
             artist_handle = _artist_handle.value
         else:
@@ -236,6 +239,7 @@ class MainMenu:
         artist_handle = insensitive_match(artist_handle, self.__artists_info).value
         artist_obj = self.__artists_info[artist_handle]
 
+        # --- Validate sm links ---
         print_sign(MsgSign.VALIDATE_LINKS)
         if (invalid_links := check_invalid_links(artist_obj.social_media, self.browser)).is_some:
             print_sign(MsgErr.FOUND_INVALID_LINKS)
@@ -243,9 +247,11 @@ class MainMenu:
                 return Ok(None)
             artists_info_save(self.__artists_info, self.__artists_alt_handles)
 
+        # --- Compose ---
         print_sign(MsgSign.COMPOSE)
         message = self.__step_composing(post, artist_uname, artist_handle, all_handles, more_hashtags.split()).unwrap()
 
+        # --- Send ---
         print_sign(MsgSign.SEND, end_line="\r")
         timer = time.time()
         if (res := send_telegram_message(message, post.media, post.media_type, self.__is_irl)).is_ok:
