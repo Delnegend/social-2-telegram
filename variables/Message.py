@@ -1,3 +1,15 @@
+import re
+
+from variables.Colors import Colors
+
+
+def highlight(content: str, color: str = Colors.YELLOW) -> str:
+    # replace <...> with color
+    for match in re.findall(r"<\|(.*?)\|>", content):
+        content = content.replace(f"<|{match}|>", f"{color}{match}{Colors.END}")
+    return content
+
+
 class MsgSign:
     GET_USERNAME = "Getting artist's display name"
     SCRAPE = "Scraping {}"
@@ -9,15 +21,17 @@ class MsgSign:
 
 
 class Msg:
-    ZERO_2_CANCEL = "Type 0 to cancel the process at any time"
+    ZERO_2_CANCEL = highlight("Type <|0|> to cancel the process at any time")
     DEBUG_ENABLED = "Debug mode is enabled, scraper will not send any message to telegram"
-    ENTER_POST_URL = "Enter post url or [/login example.com] "
+    ENTER_POST_URL = highlight("<|<post>|> || <|/irl <post>>|> || <|/login <site>|>")
     CLOSING_SESSION = "Closing session..."
     DOESNT_MATCH_PATTERN = "The url doesn't match pattern for a post"
 
     MORE_HASHTAGS = "# not included (separated by a space): "
-    SELECT_HANDLE = "Enter the index, <username>, <username where_to_find.com> or leave empty to use {}: "
-    ENTER_USERNAME = "Cannot scrape username for {}, please enter manually: "
+    SELECT_HANDLE = highlight(
+        "Enter the <|index|>, <|<username>|>, <|<username where_to_find.com>|> or leave empty to use <|{}|>: "
+    )
+    ENTER_USERNAME = highlight("Cannot scrape username for <|{}|>, please enter manually: ")
 
 
 class MsgErr:
