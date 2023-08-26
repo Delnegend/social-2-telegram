@@ -12,6 +12,7 @@ from helpers import (
     artists_info_load,
     artists_info_save,
     check_invalid_links,
+    find_main_handle,
     handle_invalid_links,
     match_host,
     md_format,
@@ -45,7 +46,7 @@ class MainMenu:
             sys.exit(0)
 
         self.__artists_info: dict[str, ArtistInfoData] = {}
-        self.__artists_alt_handles: dict[str, str] = {}  # key: alt handle, value: main handle
+        self.__artists_alt_handles: dict[str, set[str]] = {}  # key: alt handle, value: main handle
         self.__artists_info, self.__artists_alt_handles = artists_info_load()
 
         self.browser = Browser()
@@ -163,18 +164,13 @@ class MainMenu:
             for name, link in artist_obj.social_media.items()
         )
         video_hashtag = "#ANI " if post.media_type == "video" else ""
-
-        artist_hashtag_list = [hashtag for hashtag in artist_obj.hashtag_represent.split(" ")]
-        artist_hashtag_list.append(artist_handle) if artist_handle not in artist_hashtag_list else None
+        artist_hashtag_list = [hashtag for hashtag in artist_obj.hashtag_represent.split(" ")] + [artist_handle]
         artist_hashtag_list.extend(key for key, value in self.__artists_alt_handles.items() if artist_handle in value)
-
-        mention_hashtags_list = [handle for handle in all_handles if handle.strip() and handle != artist_handle]
-
-        post_hashtags_list = [hashtag[0] for hashtag in post.hashtag_link if hashtag[0].strip()]
+        post_hashtags_list = [hashtag[0] for hashtag in post.hashtag_link]
 
         # can't use set() because it will change the order
-        hashtags_list = []
-        for hashtag in artist_hashtag_list + mention_hashtags_list + more_hashtags + post_hashtags_list:
+        hashtags_list: list[str] = []
+        for hashtag in artist_hashtag_list + all_handles + more_hashtags + post_hashtags_list:
             if hashtag.strip() and hashtag not in hashtags_list:
                 hashtags_list.append(hashtag.strip())
         hashtags = " ".join(f"#{hashtag}" if not hashtag.startswith("#") else hashtag for hashtag in hashtags_list)
@@ -212,19 +208,18 @@ class MainMenu:
         all_handles = [post.handle] + [mention[0] for mention in post.mention_link if mention[0] != post.handle]
         if (artist_handle := self.__step__ask_artist_handle(all_handles).unwrap()) == "0":
             return Ok(None)
-        if (artist_uname_res := self.__step__get_artist_username(artist_handle, post.handle, post.username)).is_err:
-            return Err(artist_uname_res.unwrap_err())
-        elif (artist_uname := artist_uname_res.unwrap()) == "0":
+        if (_artist_uname := self.__step__get_artist_username(artist_handle, post.handle, post.username)).is_err:
+            return Err(_artist_uname.unwrap_err())  # type: ignore
+        elif (artist_uname := _artist_uname.unwrap()) == "0":
             return Ok(None)
 
         print_sign(MsgSign.MORE_HASHTAGS)
         if (more_hashtags := self.__step__ask_more_hashtags().unwrap()) == "0":
             return Ok(None)
 
-        if (foo := insensitive_match(artist_handle, self.__artists_alt_handles)).is_some:
-            artist_handle = self.__artists_alt_handles[foo.value]
-
-        if (insensitive_match(artist_handle, self.__artists_info)).is_none:
+        if (_artist_handle := find_main_handle(artist_handle, self.__artists_alt_handles)).is_some:
+            artist_handle = _artist_handle.value
+        else:
             print_sign(MsgErr.ARTIST_NOT_FOUND)
             if NewArtist(artist_handle, self.__artists_info, self.__artists_alt_handles).new().unwrap() == "0":
                 return Ok(None)
@@ -245,7 +240,7 @@ class MainMenu:
 
         print_sign(MsgSign.SEND, end_line="\r")
         timer = time.time()
-        if (res := send_telegram_message(message, post.media, post.media_type)).is_ok:
+        if (res := send_telegram_message(message, post.media, post.media_type, self.__is_irl)).is_ok:
             print_sign(MsgSign.SEND, f"{round(time.time() - timer, 2)} seconds", start_line="")
             return Ok(None)
         else:
