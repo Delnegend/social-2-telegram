@@ -61,7 +61,7 @@ class MainMenu:
             input_url: str = input("🍨 ").strip()
 
             if input_url == "0":
-                print("Closing session...")
+                print(Msg.CLOSING_SESSION)
                 self.browser.driver.quit()
                 sys.exit(0)
 
