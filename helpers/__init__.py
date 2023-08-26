@@ -1,4 +1,5 @@
 from helpers.artists_info_load_save import artists_info_load, artists_info_save
+from helpers.find_main_handle import find_main_handle
 from helpers.insensitive_match import insensitive_match  # type: ignore
 from helpers.invalid_sm_links import check_invalid_links, handle_invalid_links
 from helpers.match_host import match_host
@@ -12,6 +13,7 @@ from helpers.telegram_listen import telegram_listen
 __all__ = [
     "check_invalid_links",
     "handle_invalid_links",
+    "find_main_handle",
     "md_format",
     "norm",
     "print_sign",
