@@ -62,17 +62,7 @@ def __check_selenium_uname_in_title(url: str, uname: str, browser: Browser) -> b
 def __check_selenium_pixiv(url: str, browser: Browser) -> bool:
     """Check if the pixiv page contains the follow button"""
     browser.driver.get(url)
-    valid = False
-    timer = time.time()
-    while not valid:
-        try:
-            elem = browser.get_elem(browser.driver, '[data-click-label="follow"]')
-        except:
-            continue
-        valid = elem is not None
-        if time.time() - timer > Config.WAIT_ELEM_TIMEOUT:
-            break
-    return valid
+    return browser.get_elem(browser.driver, '[data-click-label="follow"]').is_some
 
 
 def check_invalid_links(_input_links: dict[str, str], browser: Browser) -> Option[dict[str, str]]:
@@ -128,6 +118,8 @@ def check_invalid_links(_input_links: dict[str, str], browser: Browser) -> Optio
                 case _ if "linktr.ee" in link:
                     if (match := re.search(r"(?<=linktr.ee\/)[^\/]+", link)) is not None:
                         uname = match.group(0)
+                case _:
+                    pass
 
             if not uname:
                 __print_link(name, link, "cannot parse username from link")
