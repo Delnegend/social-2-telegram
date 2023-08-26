@@ -140,5 +140,8 @@ class Browser:
         self, parent: WebElement | WebDriver, css_selector: str, timeout: float = Config.WAIT_ELEM_TIMEOUT
     ) -> list[WebElement]:
         """Wait + find elements"""
-        WebDriverWait(parent, timeout).until(exist((By.CSS_SELECTOR, css_selector)))
-        return parent.find_elements(By.CSS_SELECTOR, css_selector)
+        try:
+            WebDriverWait(parent, timeout).until(exist((By.CSS_SELECTOR, css_selector)))  # type: ignore
+        except:
+            return []
+        return parent.find_elements(By.CSS_SELECTOR, css_selector)  # type: ignore
