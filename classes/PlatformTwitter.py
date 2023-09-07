@@ -113,11 +113,11 @@ class PlatformTwitter(PlatformBase):
             for future in as_completed(futures):
                 text, url = future.result()
                 if text.startswith("@"):
-                    mentions.append(tuple([text.replace("@", ""), url]))
+                    mentions.append((str(text.replace("@", "")), url))
                 elif text.startswith("#"):
-                    hashtags.append(tuple([text.replace("#", ""), url]))
+                    hashtags.append((text.replace("#", ""), url))
                 else:
-                    just_links.append(tuple([text.replace("https://", "").replace("http://", ""), url]))
+                    just_links.append((text.replace("https://", "").replace("http://", ""), url))
 
         return {"mentions": mentions, "hashtags": hashtags, "just_links": just_links}
 
