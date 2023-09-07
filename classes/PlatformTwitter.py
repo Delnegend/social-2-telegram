@@ -79,6 +79,7 @@ class PlatformTwitter(PlatformBase):
     def __process_content(self, content: str) -> str:
         """HTML -> Markdown + clean up"""
 
+        content = content.replace("[", "SquareBracStart").replace("]", "SquareBracEnd")
         content = re.sub(r"<span.*?>|</span>|<div.*?>|</div>", "", content)
         content = re.sub(r"<img.*?alt=\"(.*?)\".*?>", r"\1", content)
         content = re.sub(r"<a.*?href=\"(.*?)\".*?>(.*?)</a>", r"[\2](\1)", content)
