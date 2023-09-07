@@ -42,7 +42,10 @@ class Browser:
 
         self.__loading_extension(options)
 
-        driver_path = EdgeChromiumDriverManager().install()
+        if Config.MSEDGE_DRIVER_PATH == "":
+            driver_path = EdgeChromiumDriverManager().install()
+        else:
+            driver_path = Config.MSEDGE_DRIVER_PATH
         print(f"Edge driver path: {driver_path}")
         self.driver = webdriver.Edge(service=EdgeService(driver_path), options=options)
 
