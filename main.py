@@ -177,7 +177,7 @@ class MainMenu:
         # can't use set() because it will change the order
         hashtags_list: list[str] = []
         for hashtag in artist_hashtag_list + all_handles + more_hashtags + post_hashtags_list:
-            if hashtag.strip() and hashtag not in hashtags_list:
+            if hashtag.strip() and hashtag.lower() not in [hashtag.lower() for hashtag in hashtags_list]:
                 hashtags_list.append(hashtag.strip())
         hashtags = " ".join(f"#{hashtag}" if not hashtag.startswith("#") else hashtag for hashtag in hashtags_list)
 
