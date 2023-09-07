@@ -228,7 +228,7 @@ class MainMenu:
             return Ok(None)
 
         # --- If handle not found in DB, create ---
-        if (_artist_handle := find_main_handle(artist_handle, self.__artists_alt_handles)).is_some:
+        if (_artist_handle := find_main_handle(artist_handle, self.__artists_alt_handles, self.__artists_info)).is_some:
             artist_handle = _artist_handle.value
         else:
             print_sign(MsgErr.ARTIST_NOT_FOUND)
@@ -236,7 +236,6 @@ class MainMenu:
                 return Ok(None)
             artists_info_save(self.__artists_info, self.__artists_alt_handles)
 
-        artist_handle = insensitive_match(artist_handle, self.__artists_info).value
         artist_obj = self.__artists_info[artist_handle]
 
         # --- Validate sm links ---
