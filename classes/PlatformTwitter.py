@@ -83,7 +83,7 @@ class PlatformTwitter(PlatformBase):
         content = re.sub(r"<span.*?>|</span>|<div.*?>|</div>", "", content)
         content = re.sub(r"<img.*?alt=\"(.*?)\".*?>", r"\1", content)
         content = re.sub(r"<a.*?href=\"(.*?)\".*?>(.*?)</a>", r"[\2](\1)", content)
-        content = re.sub(r"<br>", "\n", content)
+        content = content.replace("<br>", "\n")
 
         # for each [...](...)
         # [...]: remove https:// and http://
